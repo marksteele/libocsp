@@ -1,0 +1,3 @@
+A small library to perform OCSP lookups.
+
+Requires gnutls
