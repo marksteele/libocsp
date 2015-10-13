@@ -1,3 +1,12 @@
 A small library to perform OCSP lookups.
 
 Requires gnutls
+
+
+Building:
+
+autoreconf --install
+libtoolize
+automake --add-missing
+./configure
+make

@@ -1,5 +1,10 @@
-# http://www.gnu.org/software/automake
+src/ocsp
+ar-lib
+libtool
+ltmain.sh
 
+*.save
+*/.libs
 *Makefile.in
 Makefile
 config.guess
