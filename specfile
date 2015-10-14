@@ -1,4 +1,4 @@
-Name: libocsp
+Name: ocsp
 Version: %{_version}
 Release: %{_release}%{?dist}
 License: GPLv2
@@ -9,12 +9,23 @@ Vendor: Mark Steele
 Packager: Mark Steele <mark@control-alt-del.org>
 BuildRoot: %{_tmppath}/%{name}-%{_revision}-%{release}-root
 Summary: Small client library for sending OCSP requests
-Obsoletes: libocsp
+Obsoletes: ocsp
 BuildRequires: gnutls-devel, libtool, autoconf, automake, libcurl-devel
 Requires: libcurl, gnutls
+Provides: libocsp.so.0
+
+%define debug_package %{nil}
 
 %description
-Small client library for sending OCSP requests
+Small client for sending OCSP requests
+
+%package devel
+Group: Development/Libraries
+Requires: %{name} = %{version}-%{release}, gnutls-devel, libcurl-devel
+Summary: Files needed for building applications with libocsp.
+
+%description devel
+libocsp is a library to send OCSP requests.
 
 %prep
 %setup -q -n %{_tarname_base}
