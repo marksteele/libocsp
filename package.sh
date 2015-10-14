@@ -1,8 +1,8 @@
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
-  echo "You need to specify a tag"
-  exit 1
+    echo "You need to specify a tag"
+    exit 1
 fi
 git add .
 git commit -m "packaging"
@@ -10,7 +10,7 @@ git push
 git tag -d v${1}
 git push origin :refs/tags/v${1}
 git tag -a v${1} -m "${1} release"
-git push --tags
+#git push --tags
 
 PKG_REVISION=`git describe --tags`
 PKG_VERSION=`git describe --tags | tr - .`
@@ -32,15 +32,15 @@ mkdir -p BUILD
 mkdir -p packages
 #rpmbuild --define "_rpmfilename ocsp-${PKG_REVISION}-${PKG_BUILD}.x86_64.rpm" \
 rpmbuild --define "_topdir ${PWD}" \
-		--define "_sourcedir ${PWD}" \
-		--define "_specdir ${PWD}" \
-		--define "_rpmdir ${PWD}/packages" \
-		--define "_srcrpmdir ${PWD}/packages" \
-		--define "_revision ${PKG_VERSION}" \
-		--define "_version ${PKG_VERSION_NO_H}" \
-		--define "_release ${PKG_BUILD}" \
-		--define "_tarname ${PKG_ID}.tar.gz" \
-		--define "_tarname_base ${PKG_ID}" \
-		-ba ../specfile
+    --define "_sourcedir ${PWD}" \
+    --define "_specdir ${PWD}" \
+    --define "_rpmdir ${PWD}/packages" \
+    --define "_srcrpmdir ${PWD}/packages" \
+    --define "_revision ${PKG_VERSION}" \
+    --define "_version ${PKG_VERSION_NO_H}" \
+    --define "_release ${PKG_BUILD}" \
+    --define "_tarname ${PKG_ID}.tar.gz" \
+    --define "_tarname_base ${PKG_ID}" \
+    -ba ../specfile
 cd packages && for rpmfile in *.rpm; do sha256sum ${rpmfile} > ${rpmfile}.sha; done
 cd x86_64 && for rpmfile in *.rpm; do sha256sum ${rpmfile} > ${rpmfile}.sha; done

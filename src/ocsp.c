@@ -34,37 +34,34 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   CURL *handle;
   struct curl_slist *headers = NULL;
   int v, seq;
-  char *hostname = NULL;
+  char *ocsp_url = NULL;
   unsigned char noncebuf[23];
   gnutls_datum_t nonce = { noncebuf, sizeof(noncebuf) };
 
   gnutls_global_init();
 
   ret = gnutls_rnd(GNUTLS_RND_NONCE, nonce.data, nonce.size);
-  if (ret < 0)
+  if (ret < 0) {
     exit(1);
-
-  for (seq = 0;; seq++) {
-    ret = gnutls_x509_crt_get_authority_info_access(cert,
-                                                    seq,
-                                                    GNUTLS_IA_OCSP_URI,
-                                                    &tmp,
-                                                    NULL);
-    if (ret == GNUTLS_E_UNKNOWN_ALGORITHM)
-      continue;
-    if (ret == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
-      return(1);
-    }
-    if (ret < 0) {
-      return(1);
-    }
-
-    hostname = malloc(tmp.size + 1);
-    memcpy(hostname, tmp.data, tmp.size);
-    hostname[tmp.size] = 0;
-    gnutls_free(tmp.data);
-    break;
   }
+  ret = gnutls_x509_crt_get_authority_info_access(cert,
+                                                  0,
+                                                  GNUTLS_IA_OCSP_URI,
+                                                  &tmp,
+                                                  NULL);
+
+  if (ret == GNUTLS_E_REQUESTED_DATA_NOT_AVAILABLE) {
+    exit(1);
+  }
+
+  if (ret < 0) {
+    exit(1);
+  }
+
+  ocsp_url = malloc(tmp.size + 1);
+  memcpy(ocsp_url, tmp.data, tmp.size);
+  ocsp_url[tmp.size] = 0;
+  gnutls_free(tmp.data);
 
   memset(&ud, 0, sizeof(ud));
   _generate_request(&req, cert, issuer, &nonce);
@@ -74,8 +71,9 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   handle = curl_easy_init();
   if (handle == NULL) {
     // @TODO deinit stuff here...
-    return(1);
+    exit(1);
   }
+
   headers =
     curl_slist_append(headers,
                       "Content-Type: application/ocsp-request");
@@ -83,7 +81,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   curl_easy_setopt(handle, CURLOPT_HTTPHEADER, headers);
   curl_easy_setopt(handle, CURLOPT_POSTFIELDS, (void *) req.data);
   curl_easy_setopt(handle, CURLOPT_POSTFIELDSIZE, req.size);
-  curl_easy_setopt(handle, CURLOPT_URL, hostname);
+  curl_easy_setopt(handle, CURLOPT_URL, ocsp_url);
   curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, get_data);
   curl_easy_setopt(handle, CURLOPT_WRITEDATA, &ud);
 
@@ -91,7 +89,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   if (ret != 0) {
     // @TODO deinit stuff here
     curl_easy_cleanup(handle);
-    return(1);
+    exit(1);
   }
 
   curl_easy_cleanup(handle);
@@ -106,8 +104,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   return v;
 }
 
-static void
-_generate_request(gnutls_datum_t * rdata, gnutls_x509_crt_t cert,
+static void _generate_request(gnutls_datum_t * rdata, gnutls_x509_crt_t cert,
                   gnutls_x509_crt_t issuer, gnutls_datum_t *nonce)
 {
   gnutls_ocsp_req_t req;
@@ -131,7 +128,6 @@ _generate_request(gnutls_datum_t * rdata, gnutls_x509_crt_t cert,
     exit(1);
 
   gnutls_ocsp_req_deinit(req);
-
   return;
 }
 
