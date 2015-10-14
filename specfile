@@ -10,6 +10,8 @@ Packager: Mark Steele <mark@control-alt-del.org>
 BuildRoot: %{_tmppath}/%{name}-%{_revision}-%{release}-root
 Summary: Small client library for sending OCSP requests
 Obsoletes: libocsp
+BuildRequires: gnutls-devel, libtool, autoconf, automake, libcurl-devel
+Requires: libcurl, gnutls
 
 %description
 Small client library for sending OCSP requests
@@ -40,10 +42,10 @@ rm %{buildroot}%{_libdir}/libocsp.la
 
 %files
 %defattr(-,root,root)
-%doc README
 %{_libdir}/libocsp.*
 %{_bindir}/ocsp
 %{_includedir}/ocsp.h
+%{_docdir}/ocsp/README
 
 %clean
 rm -rf %{buildroot}
