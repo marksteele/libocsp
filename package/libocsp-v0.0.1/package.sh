@@ -22,6 +22,7 @@ PKG_VERSION_NO_H=`echo ${PKG_VERSION} | tr - .`
 mkdir -p package
 rm -rf package/libocsp
 git archive --format=tar --prefix=${PKG_ID}/ ${PKG_REVISION}| (cd package && tar -xf -)
+mkdir -p package/${PKG_ID}/priv
 find package/${PKG_ID} -depth -name ".git" -exec rm -rf {} \;
 tar -C package -czf package/${PKG_ID}.tar.gz ${PKG_ID}
 exit
