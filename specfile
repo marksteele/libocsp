@@ -31,6 +31,7 @@ rm -rf %{buildroot}
 
 %makeinstall
 
+
 %post
 /sbin/ldconfig
 
@@ -39,7 +40,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_libdir}/libcurl.so.*
+%{_libdir}/libocsp.so.*
 %{_bindir}/ocsp
 
 %clean
