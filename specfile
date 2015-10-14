@@ -11,21 +11,31 @@ BuildRoot: %{_tmppath}/%{name}-%{_revision}-%{release}-root
 Summary: Small client library for sending OCSP requests
 Obsoletes: ocsp
 BuildRequires: gnutls-devel, libtool, autoconf, automake, libcurl-devel
-Requires: libcurl, gnutls
-Provides: libocsp.so.0
+Requires: liboscp = %{version}-%{release}
 
 %define debug_package %{nil}
 
 %description
 Small client for sending OCSP requests
 
-%package devel
+%package -n libocsp
 Group: Development/Libraries
-Requires: %{name} = %{version}-%{release}, gnutls-devel, libcurl-devel
+Requires: gnutls, libcurl
 Summary: Files needed for building applications with libocsp.
 
-%description devel
+%description -n libocsp
 libocsp is a library to send OCSP requests.
+
+%package -n libocsp-devel
+Summary: Files needed for building applications with libocsp
+Group: Development/Libraries
+Requires: liboscp = %{version}-%{release}, gnutls-devel, libcurl-devel
+Provides: ocsp-devel = %{version}-%{release}
+Obsoletes: ocsp-devel  %{version}-%{release}
+
+%description -n libocsp-devel
+The libocsp-devel package includes header files and libraries necessary for
+developing programs which use the libocsp library. 
 
 %prep
 %setup -q -n %{_tarname_base}
@@ -55,8 +65,15 @@ rm %{buildroot}%{_libdir}/libocsp.la
 %defattr(-,root,root)
 %{_libdir}/libocsp.*
 %{_bindir}/ocsp
-%{_includedir}/ocsp.h
 %{_docdir}/ocsp/README
+
+%files -n libcurl
+%defattr(-,root,root)
+%{_libdir}/libocsp.*
+
+%files -n libcurl-devel
+%defattr(-,root,root)
+%{_includedir}/ocsp.h
 
 %clean
 rm -rf %{buildroot}

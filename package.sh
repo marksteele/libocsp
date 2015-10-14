@@ -14,13 +14,13 @@ git push --tags
 
 PKG_REVISION=`git describe --tags`
 PKG_VERSION=`git describe --tags | tr - .`
-PKG_ID=libocsp-${PKG_VERSION}
+PKG_ID=ocsp-${PKG_VERSION}
 PKG_BUILD=1
 DISTRO="."
 PKG_VERSION_NO_H=`echo ${PKG_VERSION} | tr - .`
 
 mkdir -p package
-rm -rf package/libocsp
+rm -rf package/ocsp
 git archive --format=tar --prefix=${PKG_ID}/ ${PKG_REVISION}| (cd package && tar -xf -)
 find package/${PKG_ID} -depth -name ".git" -exec rm -rf {} \;
 tar -C package -czf package/${PKG_ID}.tar.gz ${PKG_ID}
@@ -30,7 +30,8 @@ cd package
 PWD = `pwd`
 mkdir -p BUILD
 mkdir -p packages
-rpmbuild --define "_rpmfilename libocsp-${PKG_REVISION}-${PKG_BUILD}.x86_64.rpm" \
+#--define "_rpmfilename ocsp-${PKG_REVISION}-${PKG_BUILD}.x86_64.rpm" \
+rpmbuild \
 		--define "_topdir ${PWD}" \
 		--define "_sourcedir ${PWD}" \
 		--define "_specdir ${PWD}" \
