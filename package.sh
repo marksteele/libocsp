@@ -43,3 +43,4 @@ rpmbuild --define "_topdir ${PWD}" \
 		--define "_tarname_base ${PKG_ID}" \
 		-ba ../specfile
 cd packages && for rpmfile in *.rpm; do sha256sum ${rpmfile} > ${rpmfile}.sha; done
+cd x86_64 && for rpmfile in *.rpm; do sha256sum ${rpmfile} > ${rpmfile}.sha; done
