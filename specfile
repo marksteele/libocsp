@@ -30,7 +30,7 @@ make
 rm -rf %{buildroot}
 
 %makeinstall
-
+rm %{buildroot}%{_libdir}/libocsp.la
 
 %post
 /sbin/ldconfig
@@ -40,8 +40,10 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%{_libdir}/libocsp.so.*
+%doc README
+%{_libdir}/libocsp.*
 %{_bindir}/ocsp
+%{_includedir}/ocsp.h
 
 %clean
 rm -rf %{buildroot}
