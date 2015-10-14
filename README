@@ -1,7 +1,6 @@
 A small library to perform OCSP lookups.
 
-Requires gnutls
-
+Building it requires gnutls,gnutls-devel,libcurl,libcurl-devel,autoconf,libtool,automake
 
 Building:
 
