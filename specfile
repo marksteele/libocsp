@@ -11,7 +11,7 @@ BuildRoot: %{_tmppath}/%{name}-%{_revision}-%{release}-root
 Summary: Small client library for sending OCSP requests
 Obsoletes: ocsp
 BuildRequires: gnutls-devel, libtool, autoconf, automake, libcurl-devel
-Requires: liboscp = %{version}-%{release}
+Requires: libocsp = %{version}-%{release}
 
 %define debug_package %{nil}
 
@@ -29,7 +29,7 @@ libocsp is a library to send OCSP requests.
 %package -n libocsp-devel
 Summary: Files needed for building applications with libocsp
 Group: Development/Libraries
-Requires: liboscp = %{version}-%{release}, gnutls-devel, libcurl-devel
+Requires: libocsp = %{version}-%{release}, gnutls-devel, libcurl-devel
 Provides: ocsp-devel = %{version}-%{release}
 Obsoletes: ocsp-devel  %{version}-%{release}
 
