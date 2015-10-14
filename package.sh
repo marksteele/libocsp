@@ -30,9 +30,8 @@ cd package
 PWD = `pwd`
 mkdir -p BUILD
 mkdir -p packages
-#--define "_rpmfilename ocsp-${PKG_REVISION}-${PKG_BUILD}.x86_64.rpm" \
-rpmbuild \
-		--define "_topdir ${PWD}" \
+#rpmbuild --define "_rpmfilename ocsp-${PKG_REVISION}-${PKG_BUILD}.x86_64.rpm" \
+rpmbuild --define "_topdir ${PWD}" \
 		--define "_sourcedir ${PWD}" \
 		--define "_specdir ${PWD}" \
 		--define "_rpmdir ${PWD}/packages" \
