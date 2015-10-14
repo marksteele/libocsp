@@ -12,12 +12,12 @@ git push origin :refs/tags/v${1}
 git tag -a v${1} -m "${1} release"
 git push --tags
 
-PKG_REVISION = `git describe --tags`
-PKG_VERSION = `git describe --tags | tr - .`
-PKG_ID = libocsp-$(PKG_VERSION)
-PKG_BUILD = 1
-DISTRO = "."
-PKG_VERSION_NO_H = `echo $(PKG_VERSION) | tr - .`
+PKG_REVISION=`git describe --tags`
+PKG_VERSION=`git describe --tags | tr - .`
+PKG_ID=libocsp-$(PKG_VERSION)
+PKG_BUILD=1
+DISTRO="."
+PKG_VERSION_NO_H=`echo $(PKG_VERSION) | tr - .`
 
 mkdir -p package
 rm -rf package/libocsp
