@@ -67,11 +67,11 @@ rm %{buildroot}%{_libdir}/libocsp.la
 %{_bindir}/ocsp
 %{_docdir}/ocsp/README
 
-%files -n libcurl
+%files -n libocsp
 %defattr(-,root,root)
 %{_libdir}/libocsp.*
 
-%files -n libcurl-devel
+%files -n libocsp-devel
 %defattr(-,root,root)
 %{_includedir}/ocsp.h
 

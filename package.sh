@@ -27,7 +27,7 @@ tar -C package -czf package/${PKG_ID}.tar.gz ${PKG_ID}
 rm -rf package/${PKG_ID}
 
 cd package
-PWD = `pwd`
+PWD=`pwd`
 mkdir -p BUILD
 mkdir -p packages
 #rpmbuild --define "_rpmfilename ocsp-${PKG_REVISION}-${PKG_BUILD}.x86_64.rpm" \
