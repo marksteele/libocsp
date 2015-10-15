@@ -156,7 +156,6 @@ size_t get_data(void *buffer, size_t size, size_t nmemb, void *userp)
 
   memcpy(&ud->data[ud->size], buffer, size);
   ud->size += size;
-  gnutls_free(ud);
   return size;
 }
 
