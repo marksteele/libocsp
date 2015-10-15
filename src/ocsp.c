@@ -37,6 +37,8 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   unsigned char noncebuf[23];
   gnutls_datum_t nonce = { noncebuf, sizeof(noncebuf) };
 
+  v = -1;
+
   gnutls_global_init();
 
   ret = gnutls_rnd(GNUTLS_RND_NONCE, nonce.data, nonce.size);
@@ -88,7 +90,9 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
  cleanup:
   free(ocsp_url);
   curl_slist_free_all(headers);
-  curl_easy_cleanup(handle);
+  if (handle != NULL) {
+    curl_easy_cleanup(handle);
+  }
   curl_global_cleanup();
   gnutls_free(tmp.data);
   gnutls_free(ud.data);
