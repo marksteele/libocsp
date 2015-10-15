@@ -91,6 +91,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   free(ocsp_url);
   curl_slist_free_all(headers);
   curl_easy_cleanup(handle);
+  curl_global_cleanup();
   gnutls_free(tmp.data);
   gnutls_free(ud.data);
   gnutls_free(req.data);
