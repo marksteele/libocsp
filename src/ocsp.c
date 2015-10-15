@@ -93,10 +93,10 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   curl_easy_cleanup(handle);
   gnutls_free(tmp.data);
   gnutls_free(ud.data);
+  gnutls_free(req.data);
   gnutls_x509_crt_deinit(cert);
   gnutls_x509_crt_deinit(issuer);
   gnutls_x509_crt_deinit(signer);
-  gnutls_ocsp_req_deinit(req);
   gnutls_global_deinit();
   return v;
 }
@@ -151,12 +151,12 @@ size_t get_data(void *buffer, size_t size, size_t nmemb, void *userp)
 
   ud->data = realloc(ud->data, size + ud->size);
   if (ud->data == NULL) {
-    return NULL;
+    return 0;
   }
 
   memcpy(&ud->data[ud->size], buffer, size);
   ud->size += size;
-  gnutls_free(ud.data);
+  gnutls_free(ud);
   return size;
 }
 
