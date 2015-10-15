@@ -29,12 +29,10 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   issuer = load_cert(issuer_buf);
   signer = load_cert(signer_buf);
 
-  gnutls_datum_t ud, tmp;
-  int ret;
-  gnutls_datum_t req;
+  gnutls_datum_t ud, tmp, req;
+  int ret, v;
   CURL *handle;
   struct curl_slist *headers = NULL;
-  int v, seq;
   char *ocsp_url = NULL;
   unsigned char noncebuf[23];
   gnutls_datum_t nonce = { noncebuf, sizeof(noncebuf) };
