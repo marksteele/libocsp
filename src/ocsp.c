@@ -30,16 +30,19 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   signer = load_cert(signer_buf);
 
   gnutls_datum_t ud, tmp, req;
-  int ret, v;
+  int ret = 0, v = 0;
   CURL *handle;
   struct curl_slist *headers = NULL;
   char *ocsp_url = NULL;
   unsigned char noncebuf[23];
   gnutls_datum_t nonce = { noncebuf, sizeof(noncebuf) };
 
-  v = -1;
-
   gnutls_global_init();
+  curl_global_init(CURL_GLOBAL_ALL);
+  handle = curl_easy_init();
+  if (handle == NULL) {
+    goto cleanup;
+  }
 
   ret = gnutls_rnd(GNUTLS_RND_NONCE, nonce.data, nonce.size);
   if (ret < 0) {
@@ -63,11 +66,6 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
 
   _generate_request(&req, cert, issuer, &nonce);
 
-  curl_global_init(CURL_GLOBAL_ALL);
-  handle = curl_easy_init();
-  if (handle == NULL) {
-    goto cleanup;
-  }
 
   headers =
     curl_slist_append(headers,
@@ -90,9 +88,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
  cleanup:
   free(ocsp_url);
   curl_slist_free_all(headers);
-  if (handle != NULL) {
-    curl_easy_cleanup(handle);
-  }
+  curl_easy_cleanup(handle);
   curl_global_cleanup();
   gnutls_free(tmp.data);
   gnutls_free(ud.data);
