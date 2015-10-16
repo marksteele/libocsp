@@ -24,8 +24,8 @@ static int _verify_response(gnutls_datum_t * data, gnutls_x509_crt_t cert,
 int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
 {
 
-  openlog("OCSPCHECK",LOG_CONS|LOG_PID_LOG_NDELAY,LOG_LOCAL1);
-  syslog(LOG_ERROR,"STARTING OCSP");
+  openlog("OCSPCHECK",LOG_CONS|LOG_PID|LOG_NDELAY,LOG_LOCAL1);
+  syslog(LOG_ERR,"STARTING OCSP");
 
   gnutls_x509_crt_t cert, issuer, signer;
 
@@ -33,7 +33,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   issuer = load_cert(issuer_buf);
   signer = load_cert(signer_buf);
 
-  syslog(LOG_ERROR,"CERTS LOADED");
+  syslog(LOG_ERR,"CERTS LOADED");
 
   gnutls_datum_t ud, tmp, req;
   int ret = 0, v = 0;
@@ -51,7 +51,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
     goto cleanup;
   }
 
-  syslog(LOG_ERROR,"CURL/GNUTLS initialized");
+  syslog(LOG_ERR,"CURL/GNUTLS initialized");
 
   ret = gnutls_rnd(GNUTLS_RND_NONCE, nonce.data, nonce.size);
   if (ret < 0) {
@@ -72,11 +72,11 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   memcpy(ocsp_url, tmp.data, tmp.size);
   ocsp_url[tmp.size] = 0;
 
-  syslog(LOG_ERROR,"EXTRACTED OCSP URL");
+  syslog(LOG_ERR,"EXTRACTED OCSP URL");
 
   memset(&ud, 0, sizeof(ud));
   _generate_request(&req, cert, issuer, &nonce);
-  syslog(LOG_ERROR,"OCSP REQ GENERATED");
+  syslog(LOG_ERR,"OCSP REQ GENERATED");
 
   headers =
     curl_slist_append(headers,
@@ -93,11 +93,11 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   if (ret != 0) {
     goto cleanup;
   }
-  syslog(LOG_ERROR,"OCSP REQ SENT");
+  syslog(LOG_ERR,"OCSP REQ SENT");
 
   v = _verify_response(&ud, cert, signer, &nonce);
 
-  syslog(LOG_ERROR,"OCSQP RESP DONE");
+  syslog(LOG_ERR,"OCSQP RESP DONE");
 
  cleanup:
   if (ocsp_url != NULL) {
@@ -111,22 +111,23 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   }
 
   curl_global_cleanup();
-  syslog(LOG_ERROR,"CURL GLOBAL CLEANUP");
+  syslog(LOG_ERR,"CURL GLOBAL CLEANUP");
 
   gnutls_free(tmp.data);
-  syslog(LOG_ERROR,"GNUTLS FREE TMP.DATA");
+  syslog(LOG_ERR,"GNUTLS FREE TMP.DATA");
   gnutls_free(ud.data);
-  syslog(LOG_ERROR,"FREE UD.DATA");
+  syslog(LOG_ERR,"FREE UD.DATA");
   gnutls_free(req.data);
-  syslog(LOG_ERROR,"FREE REQ.DATA");
+  syslog(LOG_ERR,"FREE REQ.DATA");
   gnutls_x509_crt_deinit(cert);
-  syslog(LOG_ERROR,"DEINIT CERT");
+  syslog(LOG_ERR,"DEINIT CERT");
   gnutls_x509_crt_deinit(issuer);
-  syslog(LOG_ERROR,"DEINIT ISSUER");
+  syslog(LOG_ERR,"DEINIT ISSUER");
   gnutls_x509_crt_deinit(signer);
-  syslog(LOG_ERROR,"DEINIT SIGNER");
+  syslog(LOG_ERR,"DEINIT SIGNER");
   gnutls_global_deinit();
-  syslog(LOG_ERROR,"DEINIT GLOBAL");
+  syslog(LOG_ERR,"DEINIT GLOBAL");
+  closelog();
   return v;
 }
 
