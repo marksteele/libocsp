@@ -39,7 +39,7 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   if (signer == NULL) {
     gnutls_x509_crt_deinit(cert);
     gnutls_x509_crt_deinit(issuer);
-    return -1
+    return -1;
   }
 
   gnutls_datum_t ud, tmp, req;
