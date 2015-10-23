@@ -27,11 +27,23 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   gnutls_x509_crt_t cert, issuer, signer;
 
   cert = load_cert(cert_buf);
+  if (cert == NULL) {
+    return -1;
+  }
   issuer = load_cert(issuer_buf);
+  if(issuer == NULL) {
+    gnutls_x509_crt_deinit(cert);
+    return -1;
+  }
   signer = load_cert(signer_buf);
+  if (signer == NULL) {
+    gnutls_x509_crt_deinit(cert);
+    gnutls_x509_crt_deinit(issuer);
+    return -1
+  }
 
   gnutls_datum_t ud, tmp, req;
-  int ret = 0, v = 0;
+  int ret = 0, v = -1;
   CURL *handle;
   struct curl_slist *headers = NULL;
   char *ocsp_url = NULL;
