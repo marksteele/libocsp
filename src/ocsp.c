@@ -120,6 +120,10 @@ int ocsp_check(char *cert_buf, char *issuer_buf, char *signer_buf)
   return v;
 }
 
+
+/* three days */
+#define OCSP_VALIDITY_SECS (3*60*60*24)
+
 static int
 _verify_response(gnutls_datum_t * data, gnutls_x509_crt_t cert,
                  gnutls_x509_crt_t signer, gnutls_datum_t *nonce)
@@ -128,6 +132,11 @@ _verify_response(gnutls_datum_t * data, gnutls_x509_crt_t cert,
   int ret;
   unsigned verify = -1;
   gnutls_datum_t rnonce;
+
+  unsigned int status, cert_status;
+  time_t rtime, vtime, ntime, now;
+
+  now = time(0);
 
   ret = gnutls_ocsp_resp_init(&resp);
   if (ret < 0) {
@@ -154,14 +163,48 @@ _verify_response(gnutls_datum_t * data, gnutls_x509_crt_t cert,
   // Sets verify to gnutls_ocsp_cert_status_t
   ret = gnutls_ocsp_resp_verify_direct(resp, signer, &verify, 0);
   if (ret < 0) {
+    verify = -1;
     goto cleanup;
   }
+
+
+  ret = gnutls_ocsp_resp_get_single(resp, 0, NULL, NULL, NULL, NULL,
+                                    &cert_status, &vtime, &ntime,
+                                    &rtime, NULL);
+  if (ret != 0) {
+    verify = -1;
+    goto cleanup;
+  }
+
+  if (cert_status == GNUTLS_OCSP_CERT_GOOD) {
+    verify = 0; // We'll keep looking though...
+  } else {
+    verify = -1;
+    goto cleanup;
+  }
+
+  // Answer older than request time
+  if (ntime == -1) {
+    if (now - vtime > OCSP_VALIDITY_SECS) {
+      verify = -1;
+      goto cleanup;
+    }
+  } else {
+    /* there is a newer OCSP answer, don't trust this one */
+    if (ntime < now) {
+      verify = -1;
+      goto cleanup;
+    }
+  }
+
 
  cleanup:
   gnutls_free(rnonce.data);
   gnutls_ocsp_resp_deinit(resp);
   return verify;
 }
+
+
 
 size_t get_data(void *buffer, size_t size, size_t nmemb, void *userp)
 {
